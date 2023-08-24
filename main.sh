@@ -14,4 +14,5 @@ python -u main.py --model_name chatgpt \
         --if_close_domain 0 --if_ban_selfeval 1 \
         --if_baseline 0 \
         --if_novelty_module_have_access_to_surveys 1 --if_insp_pasg_for_bkg_and_bkg_pasg_included_in_insp 0 \
-        --if_hypothesis_suggstor 0
+        --if_hypothesis_suggstor 0 \
+        --api_key sk-

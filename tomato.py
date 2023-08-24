@@ -147,7 +147,7 @@ class Tomato(object):
             print("Loaded self.tokenizer and self.model, {} is initialized successfully".format(self.model_name))
             print_nvidia_smi()
         else:
-            self.api_key = ""
+            self.api_key = self.args.api_key
             self.tokenizer = GPT2Tokenizer.from_pretrained('gpt2')
             # it should be 4096, but we tend to make it cheaper
             self.model_input_len = 2048

@@ -16,6 +16,7 @@ def main():
     parser.add_argument("--prev_eval_output_dir", type=str, default="", help="In case previous evaluation code has exception, but we don't want to waste money on openai API to re-evaluate the already evaluated hypotheses -- we pick up the previous score from the 'x.out' file")
     parser.add_argument("--if_azure_api", type=int, default=0, help="0: Use openai api from openai website; 1: use openai api from azure")
     parser.add_argument("--if_groundtruth_hypotheses", type=int, default=0, help="0: use ckpt's hypotheses to eval; 1: use groudtruth hypotheses to eval")
+    parser.add_argument("--api_key", type=str, default="")
     args = parser.parse_args()
 
     assert args.model_name == 'gpt4' or args.model_name == 'chatgpt'

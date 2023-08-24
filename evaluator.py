@@ -15,12 +15,12 @@ class Evaluator(object):
         self.output_dir = args.output_dir
         self.prev_api_usage_time = 0
         if args.if_azure_api == 0:
-            openai.api_key = ""
+            openai.api_key = self.args.api_key
         else:
             openai.api_type = ""
             openai.api_base = ""
             openai.api_version = ""
-            openai.api_key = ""
+            openai.api_key = self.args.api_key
         assert openai.api_key != ""
         # self.hypotheses is a sub-element of self.result
         self.result = None

@@ -24,6 +24,7 @@ def main():
     parser.add_argument("--if_novelty_module_have_access_to_surveys", type=int, default=1, help="0: novelty_detector() doesn't have access to surveys; 1: novelty_detector() has access to surveys")
     parser.add_argument("--if_insp_pasg_for_bkg_and_bkg_pasg_included_in_insp", type=int, default=0, help="0: use background passages to select background, and inspiration passages to select inspirations; 1: use inspiration passage to select background, and background passage can also be used as inspiration passage")
     parser.add_argument("--if_hypothesis_suggstor", type=int, default=0, help="0: not use hypothesis_suggstor() in CoLM_controller(); 1: use hypothesis_suggstor() in CoLM_controller()")
+    parser.add_argument("--api_key", type=str, default="")
     args = parser.parse_args()
 
     # check hyper-parameters
