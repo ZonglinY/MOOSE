@@ -5,7 +5,8 @@ np.set_printoptions(formatter={'float': lambda x: "{0:0.3f}".format(x)})
 
 def read_score_file(model_name, start_id, end_id, ckpt_addr1):
     # h1
-    ckpt_dir = "/export/home/zonglin001/Checkpoints/Tomato/"
+    # ckpt_dir = "/export/home/zonglin001/Checkpoints/Tomato/"
+    ckpt_dir = "./Checkpoints/"
     hyp_file = "background_inspiration_hypotheses.pt"
     hyp_file_addr1_full = os.path.join(ckpt_dir, ckpt_addr1, hyp_file)
     h1 = torch.load(hyp_file_addr1_full)
