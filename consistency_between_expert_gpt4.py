@@ -114,10 +114,6 @@ def consistency(list1, list2, if_hard_consistency):
     ave_consistency_score = sum(consistency_score) / len(consistency_score)
     return ave_consistency_score
 
-
-    return consistency_score
-
-
 def read_expert_scores(expert_file):
     root_data_dir = "./Checkpoints/expert_evaluation/"
     # read from annotated random file
@@ -146,7 +142,7 @@ def read_expert_scores(expert_file):
 def main():
     ## Hyper-parameter
     # if_hard_consistency: 0/1
-    if_hard_consistency = 1
+    if_hard_consistency = 0
 
     # expert evaluation file
     expert_file_0 = 'expert_evaluation_normal_order.xlsx'
@@ -190,17 +186,6 @@ def main():
 
     print("if_hard_consistency: ", if_hard_consistency)
     print("Overall, consist_valid: {:.3f}; consist_novel: {:.3f}; consist_helpf: {:.3f}; len_evaluated_data: {}".format(consist_valid, consist_novel, consist_helpf, len_evaluated_data))
-
-
-
-
-
-
-
-
-
-
-
 
 
 
