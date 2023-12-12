@@ -2,27 +2,7 @@ import os
 import torch
 import numpy as np
 import pandas as pd
-
-
-def load_normal_order_expert_scores():
-    root_data_dir = "./Checkpoints/expert_evaluation/"
-    # read from annotated random file
-    raw_corpus = pd.read_excel(os.path.join(root_data_dir, 'expert_evaluation_normal_order.xlsx'))
-    full_list_of_hyp = []
-    full_list_of_validness, full_list_of_novelty, full_list_of_helpfulness = [], [], []
-    for cur_data_id in range(len(raw_corpus)):
-        cur_data_hyp = raw_corpus["Hypothesis"][cur_data_id]
-        cur_data_val = raw_corpus["Validness"][cur_data_id]
-        cur_data_nov = raw_corpus["Novelty"][cur_data_id]
-        cur_data_hep = raw_corpus["Helpfulness"][cur_data_id]
-        full_list_of_hyp.append(cur_data_hyp)
-        full_list_of_validness.append(cur_data_val)
-        full_list_of_novelty.append(cur_data_nov)
-        full_list_of_helpfulness.append(cur_data_hep)
-    assert len(full_list_of_hyp) == len(full_list_of_validness)
-    assert len(full_list_of_hyp) == len(full_list_of_novelty)
-    assert len(full_list_of_hyp) == len(full_list_of_helpfulness)
-    return full_list_of_hyp, full_list_of_validness, full_list_of_novelty, full_list_of_helpfulness
+np.set_printoptions(precision=3)
 
 
 # start_end_id = [[0,5], [5,25], [25,50]]
@@ -128,8 +108,9 @@ def consistency(list1, list2, if_hard_consistency):
                 consistency_score.append(1)
             else:
                 consistency_score.append(0)
-    print("abs(len(consistency_score)): ", abs(len(consistency_score)))
-    assert abs(len(consistency_score) - 400) <= 5
+    # Q: I forget why I add this constraint
+    # print("abs(len(consistency_score)): ", abs(len(consistency_score)))
+    assert abs(len(consistency_score) - 400) <= 5 or abs(len(consistency_score) - 208) <= 5
     ave_consistency_score = sum(consistency_score) / len(consistency_score)
     return ave_consistency_score
 
@@ -137,12 +118,13 @@ def consistency(list1, list2, if_hard_consistency):
     return consistency_score
 
 
-def read_expert_scores():
+def read_expert_scores(expert_file):
     root_data_dir = "./Checkpoints/expert_evaluation/"
     # read from annotated random file
-    raw_corpus = pd.read_excel(os.path.join(root_data_dir, 'expert_evaluation_normal_order.xlsx'))
+    raw_corpus = pd.read_excel(os.path.join(root_data_dir, expert_file))
     full_list_of_hyp = []
     full_list_of_validness, full_list_of_novelty, full_list_of_helpfulness = [], [], []
+    cnt_nonNan_value = 0
     for cur_data_id in range(len(raw_corpus)):
         cur_data_hyp = raw_corpus["Hypothesis"][cur_data_id]
         cur_data_val = raw_corpus["Validness"][cur_data_id]
@@ -152,16 +134,23 @@ def read_expert_scores():
         full_list_of_validness.append(cur_data_val)
         full_list_of_novelty.append(cur_data_nov)
         full_list_of_helpfulness.append(cur_data_hep)
+        # cnt_nonNan_value
+        if np.isnan(float(cur_data_val)) == False:
+            if float(cur_data_val) in [1, 2, 3, 4, 5]:
+                cnt_nonNan_value += 1
     assert len(full_list_of_hyp) == len(full_list_of_validness)
     assert len(full_list_of_hyp) == len(full_list_of_novelty)
     assert len(full_list_of_hyp) == len(full_list_of_helpfulness)
-    return full_list_of_validness, full_list_of_novelty, full_list_of_helpfulness
+    return full_list_of_validness, full_list_of_novelty, full_list_of_helpfulness, cnt_nonNan_value
 
 def main():
+    ## Hyper-parameter
     # if_hard_consistency: 0/1
-    if_hard_consistency = 0
-    # expert_hyp / expert_validness / expert_novelty / expert_helpfulness: []
-    expert_hyp, expert_validness, expert_novelty, expert_helpfulness = load_normal_order_expert_scores()
+    if_hard_consistency = 1
+
+    # expert evaluation file
+    expert_file_0 = 'expert_evaluation_normal_order.xlsx'
+    expert_file_1 = 'expert_evaluation_1_2_normal_order.xlsx'
     ## baseline ckpt
     ckpt_baseline2_0_50 = "chatgpt_50bkg_0itr_bkgnoter0_indirect0_onlyindirect0_close0_ban1_baseline2_hypEqlInsp_manualTitleSuggester_clearSplit_pastfdbkmodified_hypSuggestor"
     ## Tomato-base ckpts
@@ -182,14 +171,25 @@ def main():
 
     full_list_of_validness_gpt4, full_list_of_novelty_gpt4, full_list_of_helpfulness_gpt4 = unify_gpt4_scores([gpt4_scores_baseline2, gpt4_scores_tomato_base, gpt4_scores_tomato_pf_onlyf, gpt4_scores_tomato_pf_bothpf])
     print("len(full_list_of_validness_gpt4): ", len(full_list_of_validness_gpt4))
-    full_list_of_validness_expert, full_list_of_novelty_expert, full_list_of_helpfulness_expert = read_expert_scores()
 
-    consist_valid = consistency(full_list_of_validness_gpt4, full_list_of_validness_expert, if_hard_consistency)
-    consist_novel = consistency(full_list_of_novelty_gpt4, full_list_of_novelty_expert, if_hard_consistency)
-    consist_helpf = consistency(full_list_of_helpfulness_gpt4, full_list_of_helpfulness_expert, if_hard_consistency)
+    def get_consistency_between_one_expert_file_and_gpt4(expert_file, full_list_of_validness_gpt4, full_list_of_novelty_gpt4, full_list_of_helpfulness_gpt4, if_hard_consistency):
+        full_list_of_validness_expert, full_list_of_novelty_expert, full_list_of_helpfulness_expert, len_evaluated_effective_data = read_expert_scores(expert_file)
+        consist_valid = consistency(full_list_of_validness_gpt4, full_list_of_validness_expert, if_hard_consistency)
+        consist_novel = consistency(full_list_of_novelty_gpt4, full_list_of_novelty_expert, if_hard_consistency)
+        consist_helpf = consistency(full_list_of_helpfulness_gpt4, full_list_of_helpfulness_expert, if_hard_consistency)
+        print("For expert file: {}, \nconsist_valid: {:.3f}; consist_novel: {:.3f}; consist_helpf: {:.3f}; len_evaluated_effective_data: {}\n".format(expert_file, consist_valid, consist_novel, consist_helpf, len_evaluated_effective_data))
+        return consist_valid, consist_novel, consist_helpf, len_evaluated_effective_data
+
+    # Average consistency scores across files
+    consist_valid_file0, consist_novel_file0, consist_helpf_file0, len_evaluated_data_file0 = get_consistency_between_one_expert_file_and_gpt4(expert_file_0, full_list_of_validness_gpt4, full_list_of_novelty_gpt4, full_list_of_helpfulness_gpt4, if_hard_consistency)
+    consist_valid_file1, consist_novel_file1, consist_helpf_file1, len_evaluated_data_file1 = get_consistency_between_one_expert_file_and_gpt4(expert_file_1, full_list_of_validness_gpt4, full_list_of_novelty_gpt4, full_list_of_helpfulness_gpt4, if_hard_consistency)
+    consist_valid = (consist_valid_file0*len_evaluated_data_file0 + consist_valid_file1*len_evaluated_data_file1) / (len_evaluated_data_file0+len_evaluated_data_file1)
+    consist_novel = (consist_novel_file0*len_evaluated_data_file0 + consist_novel_file1*len_evaluated_data_file1) / (len_evaluated_data_file0+len_evaluated_data_file1)
+    consist_helpf = (consist_helpf_file0*len_evaluated_data_file0 + consist_helpf_file1*len_evaluated_data_file1) / (len_evaluated_data_file0+len_evaluated_data_file1)
+    len_evaluated_data = len_evaluated_data_file0 + len_evaluated_data_file1
 
     print("if_hard_consistency: ", if_hard_consistency)
-    print("consist_valid: {}; consist_novel: {}; consist_helpf: {}".format(consist_valid, consist_novel, consist_helpf))
+    print("Overall, consist_valid: {:.3f}; consist_novel: {:.3f}; consist_helpf: {:.3f}; len_evaluated_data: {}".format(consist_valid, consist_novel, consist_helpf, len_evaluated_data))
 
 
 

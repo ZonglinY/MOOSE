@@ -7,11 +7,10 @@ import pandas as pd
 
 
 
-def main():
-    ckpt_expert_evaluation_normal_order_dir = "./"
+def main(expert_file_rand_order="picked_hypotheses_for_expert_evaluation_rand_order_for_each_group_Junxian_labeled.xlsx", if_save_output_file=False):
     root_data_dir = "./Checkpoints/expert_evaluation/"
     # read from annotated random file
-    raw_corpus = pd.read_excel(os.path.join(root_data_dir, 'picked_hypotheses_for_expert_evaluation_rand_order_for_each_group_Junxian_labeled.xlsx'))
+    raw_corpus = pd.read_excel(os.path.join(root_data_dir, expert_file_rand_order))
     full_list_of_hyp = []
     full_list_of_validness, full_list_of_novelty, full_list_of_helpfulness = [], [], []
     for cur_data_id in range(len(raw_corpus)):
@@ -80,27 +79,19 @@ def main():
         full_list_of_novelty_normal_order += cur_nov_normal_order
         full_list_of_helpfulness_normal_order += cur_hep_normal_order
 
-
-
     # save
     columns = ["Hypothesis", "Validness", "Novelty", "Helpfulness"]
     df = pd.DataFrame(list(zip(full_list_of_hyp_normal_order, full_list_of_validness_normal_order, full_list_of_novelty_normal_order, full_list_of_helpfulness_normal_order)), columns=columns)
-    df.to_excel(os.path.join(ckpt_expert_evaluation_normal_order_dir, 'expert_evaluation_normal_order.xlsx'))
-    print("expert_evaluation_normal_order.xlsx")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    if expert_file_rand_order == "picked_hypotheses_for_expert_evaluation_rand_order_for_each_group_Junxian_labeled.xlsx":
+        output_file_name = "expert_evaluation_normal_order.xlsx"
+    elif expert_file_rand_order == "expert_1_2.xlsx":
+        output_file_name = "expert_evaluation_1_2_normal_order.xlsx"
+    else:
+        raise Exception("not supported rand order expert file")
+    output_full_addr = os.path.join(root_data_dir, output_file_name)
+    assert not os.path.exists(output_full_addr)
+    df.to_excel(output_full_addr)
+    print(output_file_name)
 
 
 
@@ -114,5 +105,8 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    # "picked_hypotheses_for_expert_evaluation_rand_order_for_each_group_Junxian_labeled.xlsx"
+    # "expert_1_2.xlsx"
+    expert_file_rand_order = "expert_1_2.xlsx"
+    main(expert_file_rand_order, if_save_output_file=True)
     print("finished")
