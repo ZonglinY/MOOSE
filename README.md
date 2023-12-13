@@ -18,6 +18,14 @@ In general, you may directly display results from existing checkpoints (where we
 It can be done by adjusting the *method_name1* varibale in ```compare_score.py```.  
 Specifically, *method_name1* can be set to *"rand_background_baseline"*, *"rand_background_rand_inspiration_baseline"*, *"rand_background_BM25_inspiration_baseline"*, *"gpt35_background_gpt35_inspiration"*, *"MOOSE_wo_ff1"*, *"MOOSE_wo_ff2"*, *"MOOSE_wo_survey"*, and *"MOOSE_w_random_corpus"*.
 
+### Display results in Table 9  
+```python consistency_between_expert_gpt4.py```  
+*if_hard_consistency* variable in main() can be adjusted (0 or 1) to check soft or hard consistency score.
+
+### Display results in Table 10 
+```python consistency_between_experts.py```  
+*if_hard_consistency* variable in main() can be adjusted (0 or 1) to check soft or hard consistency score.
+
 ### Hypotheses Generation with MOOSE  
 MOOSE can be run with the python command in ```main.sh```. Option parameters for the python command can be adjusted. Specifically, the function for the options are described below:  
 **--num_background_for_hypotheses*: how many number of background to find for hypotheses generation. Each background will be used to generate a set of hypotheses.  
@@ -44,7 +52,6 @@ Hypotheses can be evaluated by GPT4 with the python command in ```evaluation_mai
 **--api_key*: your openai api key to run gpt-4 for evaluation.  
 
 ### Functions of Other Python files
-```consistency_between_expert_gpt4.py```: used to display the consistency score between GPT4 evaluation and human expert evaluation.  
 ```data_format_converter.py```: used to transform expert annotated data file to usable data file (mostly format transformation).  
 ```expert_eval_random_order_to_normal_order.py```: transform expert-evaluated file from random order (to minimize bias from expert) to normal order (to calculate consistency).  
 ```pick_hyp_for_expert_eval.py```: used to randomly pick hypotheses for expert evaluation.  
