@@ -1,4 +1,4 @@
-<!-- # Large Language Models for Automated Open-domain Scientific Hypotheses Discovery -->
+# Large Language Models for Automated Open-domain Scientific Hypotheses Discovery
 
 <p align="center" width="100%">
   <img src="MOOSE and TOMATO.png" alt="MOOSE" style="width: 35%; display: block; margin: auto;"></a>
