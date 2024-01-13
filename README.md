@@ -56,3 +56,4 @@ Hypotheses can be evaluated by GPT4 with the python command in ```evaluation_mai
 ```expert_eval_random_order_to_normal_order.py```: transform expert-evaluated file from random order (to minimize bias from expert) to normal order (to calculate consistency).  
 ```pick_hyp_for_expert_eval.py```: used to randomly pick hypotheses for expert evaluation.  
 ```read_from_pdf.py```: extract text contents from social science survey paper.  
+```check_intermediate_hypothesis_and_feedback.py```: manully check the generated hypotheses and their (present-)feedback  
