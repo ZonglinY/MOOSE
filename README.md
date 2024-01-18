@@ -51,9 +51,14 @@ Hypotheses can be evaluated by GPT4 with the python command in ```evaluation_mai
 **--if_azure_api*: whether the api is from azure; set to 0 if the api is from openai.   
 **--api_key*: your openai api key to run gpt-4 for evaluation.  
 
+### Display hypotheses and corresponding intermediate generations (e.g., research background, research inspirations, future-feedback, hypothesis, and present-feedback)  
+```python check_intermediate_hypothesis_and_feedback.py --research_background_id 5 -- hypothesis_id 0 -- hypothesis_refinement_round 0```  
+**--research_background_id*: id of research background. The range is [0, 49]  
+**--hypothesis_id*: id of the hypotheses generated from a research background (and retrieved inspirations). The typical range is [0, 3 or 4]  
+**--hypothesis_refinement_round*: id of hypothesis refinement round (referred as present-feedback). The range is [0, 3]  
+
 ### Functions of Other Python files
 ```data_format_converter.py```: used to transform expert annotated data file to usable data file (mostly format transformation).  
 ```expert_eval_random_order_to_normal_order.py```: transform expert-evaluated file from random order (to minimize bias from expert) to normal order (to calculate consistency).  
 ```pick_hyp_for_expert_eval.py```: used to randomly pick hypotheses for expert evaluation.  
 ```read_from_pdf.py```: extract text contents from social science survey paper.  
-```check_intermediate_hypothesis_and_feedback.py```: manully check the generated hypotheses and their (present-)feedback  
