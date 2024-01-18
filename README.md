@@ -52,7 +52,7 @@ Hypotheses can be evaluated by GPT4 with the python command in ```evaluation_mai
 **--api_key*: your openai api key to run gpt-4 for evaluation.  
 
 ### Display hypotheses and corresponding intermediate generations (e.g., research background, research inspirations, future-feedback, hypothesis, and present-feedback)  
-```python check_intermediate_hypothesis_and_feedback.py --research_background_id 5 -- hypothesis_id 0 -- hypothesis_refinement_round 0```  
+```python check_intermediate_hypothesis_and_feedback.py --research_background_id 5 --hypothesis_id 0 --hypothesis_refinement_round 0```  
 **--research_background_id*: id of research background. The range is [0, 49]  
 **--hypothesis_id*: id of the hypotheses generated from a research background (and retrieved inspirations). The typical range is [0, 3 or 4]  
 **--hypothesis_refinement_round*: id of hypothesis refinement round (referred as present-feedback). The range is [0, 3]  
