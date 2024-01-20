@@ -4,7 +4,9 @@
   <img src="MOOSE and TOMATO.png" alt="MOOSE" style="width: 35%; display: block; margin: auto;"></a>
 </p>
 
-<!-- This repo is the official implementation of the paper [\<Large Language Models for Automated Open-domain Scientific Hypotheses Discovery\>](https://arxiv.org/pdf/2309.02726.pdf). -->
+This repo is the official implementation of the paper \<Large Language Models for Automated Open-domain Scientific Hypotheses Discovery\>.   
+[\[Arxiv version\]](https://arxiv.org/pdf/2309.02726.pdf), 
+[\[Most updated paper version\]](https://openreview.net/pdf?id=qPV0U98Mn0j)
 
 In general, you may directly display results from existing checkpoints (where we store the generated hypotheses, and evaluation scores by GPT4 & human expert), or you may generate hypotheses and evaluate the generated hypotheses by GPT4 with our code.
 
