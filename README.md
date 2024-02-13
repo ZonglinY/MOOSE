@@ -1,14 +1,14 @@
-<!--# Large Language Models for Automated Open-domain Scientific Hypotheses Discovery
--->
+# Large Language Models for Automated Open-domain Scientific Hypotheses Discovery
+
 <p align="center" width="100%">
   <img src="MOOSE and TOMATO.png" alt="MOOSE" style="width: 35%; display: block; margin: auto;"></a>
 </p>
 
-<!--
+
 This repository is the official implementation of the paper \<Large Language Models for Automated Open-domain Scientific Hypotheses Discovery\>.   
 [\[Arxiv version\]](https://arxiv.org/pdf/2309.02726.pdf), 
 [\[Most updated paper version\]](https://openreview.net/pdf?id=qPV0U98Mn0j)
--->
+
 
 In general, with this repository, you can     
 (1) generate hypotheses with MOOSE framework,   
