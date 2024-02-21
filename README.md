@@ -5,7 +5,7 @@
 </p>
 
 
-This repository is the official implementation of the paper [\<Large Language Models for Automated Open-domain Scientific Hypotheses Discovery\>](https://arxiv.org/abs/2309.02726). 
+This repository is the official implementation of the paper [\<Large Language Models for Automated Open-domain Scientific Hypotheses Discovery\>](https://arxiv.org/abs/2309.02726v2). 
 
 
 In general, with this repository, you can     
