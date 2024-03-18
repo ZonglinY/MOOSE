@@ -20,7 +20,7 @@ MOOSE can be run with the python command in ```main.sh```. Option parameters for
 **--num_CoLM_feedback_times*: number of present-feedback iterations.  
 **--bkg_corpus_chunk_noter*: start from which background corpus to find background.  
 **--if_indirect_feedback*: if run past-feedback (0: no; 1: yes).  
-**--if_only_indirect_feedback*: advanced options for past-feedback, by default is 0.
+**--if_only_indirect_feedback*: advanced options for past-feedback, by default is 0.  
 **--if_close_domain*: if adopts groundtruth background and inspirations for hypotheses generation (0: not adopt; 1: adopt).  
 **--if_ban_selfeval*: if ban future-feedback 1 (0: run future-feedback 1; 1: not run future-feedback 1).  
 **--if_baseline*: baseline options, by default is 0.  
