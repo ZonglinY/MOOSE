@@ -4,7 +4,7 @@ import torch
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--checkpoint_dir", type=str, default="./Checkpoints/chatgpt_50bkg_4itr_bkgnoter0_indirect1_onlyindirect2_close0_ban1_baseline0_survey1_bkgInspPasgSwap0_hypSuggestor1_hypEqlInsp_manualTitleSuggester_clearSplit_pastfdbkmodified_hypSuggestor", help="output directory")
+    parser.add_argument("--checkpoint_dir", type=str, default="./Checkpoints/claude_45bkg_4itr_bkgnoter5_indirect1_onlyindirect0_close0_ban0_baseline0_survey1_bkgInspPasgSwap0_hypSuggestor1", help="output directory")
     parser.add_argument("--research_background_id", type=int, default=5, help="id of the research background being used to generate research hypotheses")
     parser.add_argument("--hypothesis_id", type=int, default=0, help="id of those hypotheses generated from the research background. The typical range is [0, 3] or [0, 4].")
     parser.add_argument("--hypothesis_refinement_round", type=int, default=0, help="refinement round of the hypothesis (present-feedback)")
