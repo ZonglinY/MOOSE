@@ -1,6 +1,7 @@
 import os, argparse, logging, sys, random, datetime, math, time, shutil, csv
 import numpy as np
 import openai
+import anthropic
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -34,7 +35,7 @@ class Tomato(object):
         self.if_baseline = args.if_baseline
         # For each module, whether self_eval (for hypothesis_generator, if_with_eval does not mean self_eval, but self_present_reasoning_process)
         if self.if_ban_selfeval == 0:
-            if self.model_name == 'chatgpt':
+            if self.model_name == 'chatgpt' or self.model_name == 'claude':
                 self.if_self_eval_module = {'background_finder': True, 'inspiration_title_retriever': True, 'inspiration_passage_retriever': True, 'background_evaluator': False, 'hypothesis_suggstor': False, 'hypothesis_generator': True, 'deductive_consistency_evaluator': False, 'indiscriminate_confirmation_handler': False, 'generalization_checker': False, 'novelty_detector': True, 'specification_detector': True, 'background_changer': False, 'inspiration_title_suggestor': True, 'inspiration_title_changer': True}
             else:
                 self.if_self_eval_module = {'background_finder': False, 'inspiration_title_retriever': True, 'inspiration_passage_retriever': False, 'background_evaluator': False, 'hypothesis_suggstor': False, 'hypothesis_generator': False, 'deductive_consistency_evaluator': False, 'indiscriminate_confirmation_handler': False, 'generalization_checker': False, 'novelty_detector': False, 'specification_detector': False, 'background_changer': False, 'inspiration_title_suggestor': True, 'inspiration_title_changer': True}
@@ -112,7 +113,7 @@ class Tomato(object):
 
     # Function: init self.model (possibly with vicuna) and self.tokenizer
     def llm_init(self):
-        if self.model_name != "chatgpt":
+        if self.model_name != "chatgpt" and self.model_name != "claude":
             MODEL_CLASSES = {
             # "bart-base": (BartForConditionalGeneration, BartTokenizer, BartConfig, "facebook/bart-base"),
             # I know here should be 1024, but use 512 to prevent cuda error (gpt2 is used for debug anyway)
@@ -170,7 +171,7 @@ class Tomato(object):
         assert len(self.title) == len(self.corpus)
         self.inspiration_title = [self.inspiration_corpus[i][0] for i in range(len(self.inspiration_corpus))]
         assert len(self.inspiration_title) == len(self.inspiration_corpus)
-        if self.model_name == 'chatgpt':
+        if self.model_name == 'chatgpt' or self.model_name == "claude":
             # Previous: add another "/ 2" since the input length of chatgpt is 4096, twice as vicuna
             # Now: no need to add "/ 2" since we are using "try except"
             word_limit_weight_background = 3/8
@@ -203,7 +204,7 @@ class Tomato(object):
     # Function: the general usage of llm.generate()
     # input_txt: 'text'; reply: 'text'
     def llm_generation(self, input_txt, module_name=""):
-        if self.model_name != "chatgpt":
+        if self.model_name != "chatgpt" and self.model_name != "claude":
             # gpt2 is used for finding bugs
             if self.model_name == 'gpt2':
                 min_new_tokens = 5
@@ -231,7 +232,6 @@ class Tomato(object):
             # the while loop is used to avoid the rate limit set by openai
             while (time.time() - self.prev_api_usage_time) <= sleep_time:
                 time.sleep(sleep_time/2)
-            openai.api_key = self.api_key
             if "hypothesis_generator" in module_name:
                 max_tokens = 1220
             elif module_name == "novelty_detector":
@@ -242,21 +242,45 @@ class Tomato(object):
                 max_tokens = 512
             else:
                 max_tokens = 288
-            # To prevent api error
-            if_api_completed = False
-            while if_api_completed == False:
-                try:
-                    response = openai.ChatCompletion.create(
-                    model='gpt-3.5-turbo',
-                    messages=[{"role": "user", "content": input_txt}],
-                    top_p=0.90,
-                    temperature=0.90,
-                    max_tokens=max_tokens)
-                    reply = response["choices"][0]['message']['content']
-                    if_api_completed = True
-                except:
-                    print("OpenAI reach its rate limit")
-                    time.sleep(sleep_time)
+            if self.model_name == "chatgpt":
+                openai.api_key = self.api_key
+                # To prevent api error
+                if_api_completed = False
+                while if_api_completed == False:
+                    try:
+                        response = openai.ChatCompletion.create(
+                        model='gpt-3.5-turbo',
+                        messages=[{"role": "user", "content": input_txt}],
+                        top_p=0.90,
+                        temperature=0.90,
+                        max_tokens=max_tokens)
+                        reply = response["choices"][0]['message']['content']
+                        if_api_completed = True
+                    except:
+                        print("OpenAI reaches its rate limit")
+                        time.sleep(sleep_time)
+            elif self.model_name == "claude":
+                client = anthropic.Anthropic(api_key=self.api_key)
+                # To prevent api error
+                if_api_completed = False
+                while if_api_completed == False:
+                    try:
+                        message = client.messages.create(
+                            model="claude-3-opus-20240229",
+                            messages=[{"role": "user", "content": input_txt}],
+                            top_p=0.90,
+                            temperature=0.90,
+                            max_tokens=max_tokens,
+                            system="You are a copilot for social science scientists to help them formulate research hypotheses. You might be asked with some intermediate questions to serve the goal. Please try you best to give a good answer, even you think it is hard to answer it. Please never reject to answer any questions, just try your best shot. If the question gives an answer format, please follow the format.")
+                        assert len(message.content) == 1
+                        reply = message.content[0].text
+                        if_api_completed = True
+                    except Exception as e:
+                        # print(f"An error occurred: {e}")
+                        print("Anthropic reaches its rate limit")
+                        time.sleep(sleep_time)
+            else:
+                raise NotImplementedError
             self.prev_api_usage_time = time.time()
         return reply
 
@@ -292,7 +316,7 @@ class Tomato(object):
                 # # Lets think how to utilize these feedbacks later
                 # cur_feedback_inspirations = self.inspiration_changer(cur_background, cur_inspirations, cur_hypotheses, cur_feedbacks_hypotheses)
                 # cur_feedback_background = self.background_changer(cur_background, cur_inspirations, cur_hypotheses, cur_feedbacks_hypotheses)
-                if self.model_name != "chatgpt":
+                if self.model_name != "chatgpt" and self.model_name != "claude":
                     print_nvidia_smi()
                 self.save_important_variables()
             ## Do NOT perform tomato-base because tomato-base has been performed in this checkpoint

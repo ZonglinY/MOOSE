@@ -103,8 +103,9 @@ def read_file_find_score_concat_score(model_name, start_end_id_1, num_CoLM_feedb
 
 
 def find_hyperparameter_for_display_results(model_name, method_name):
-    assert method_name == "MOOSE_base" or method_name == "MOOSE" or method_name == "rand_background_baseline" or method_name == "rand_background_rand_inspiration_baseline" or method_name == "rand_background_BM25_inspiration_baseline" or method_name == "gpt35_background_gpt35_inspiration" or method_name == "groundtruth_background_groundtruth_inspiration" or method_name == "MOOSE_wo_ff1" or method_name == "MOOSE_wo_ff2" or method_name == "MOOSE_wo_survey" or method_name == "MOOSE_w_random_corpus"
+    assert method_name == "MOOSE_base" or method_name == "MOOSE" or method_name == "rand_background_baseline" or method_name == "rand_background_rand_inspiration_baseline" or method_name == "rand_background_BM25_inspiration_baseline" or method_name == "gpt35_background_gpt35_inspiration" or method_name == "groundtruth_background_groundtruth_inspiration" or method_name == "MOOSE_wo_ff1" or method_name == "MOOSE_wo_ff2" or method_name == "MOOSE_wo_survey" or method_name == "MOOSE_w_random_corpus" or method_name == "MOOSE_base_claude" or method_name == "MOOSE_based_with_ff1_and_ff2_claude" or method_name == "MOOSE_claude_onlyindirect2" or method_name == "MOOSE_claude_onlyindirect0" or method_name == "MOOSE_baseline2_claude"
 
+    ### chatgpt ckpts
     ## baseline ckpts
     ckpt_baseline1_0_50 = "chatgpt_50bkg_0itr_bkgnoter0_indirect0_onlyindirect0_close0_ban1_baseline1_hypEqlInsp_manualTitleSuggester_clearSplit_pastfdbkmodified_hypSuggestor"
     ckpt_baseline2_0_50 = "chatgpt_50bkg_0itr_bkgnoter0_indirect0_onlyindirect0_close0_ban1_baseline2_hypEqlInsp_manualTitleSuggester_clearSplit_pastfdbkmodified_hypSuggestor"
@@ -123,6 +124,20 @@ def find_hyperparameter_for_display_results(model_name, method_name):
     ckpt_tomato_pf_0_50_without_selfeval_with_hypSuggestor =    "chatgpt_50bkg_4itr_bkgnoter0_indirect1_onlyindirect2_close0_ban1_baseline0_survey1_bkgInspPasgSwap0_hypSuggestor1_hypEqlInsp_manualTitleSuggester_clearSplit_pastfdbkmodified_hypSuggestor"
     ckpt_tomato_pf_0_50_noSurvey = "chatgpt_50bkg_4itr_bkgnoter0_indirect1_onlyindirect2_close0_ban0_baseline0_survey0_hypEqlInsp_manualTitleSuggester_clearSplit_pastfdbkmodified_hypSuggestor"
     ckpt_tomato_pf_0_50_bkg_insp_pasg_swap = "chatgpt_50bkg_4itr_bkgnoter0_indirect1_onlyindirect2_close0_ban0_baseline0_survey1_bkgInspPasgSwap1_hypEqlInsp_manualTitleSuggester_clearSplit_pastfdbkmodified_hypSuggestor"
+    ### claude ckpts
+    ## MOOSE-based ckpts
+    ckpt_tomato_base_0_5_claude = "claude_5bkg_4itr_bkgnoter0_indirect0_onlyindirect0_close0_ban1_baseline0_survey1_bkgInspPasgSwap0_hypSuggestor0"
+    ckpt_tomato_base_5_50_claude = "claude_45bkg_4itr_bkgnoter5_indirect0_onlyindirect0_close0_ban1_baseline0_survey1_bkgInspPasgSwap0_hypSuggestor0"
+    ## MOOSE-future ckpts
+    ckpt_tomato_base_ff1_ff2_0_5_claude = "claude_5bkg_4itr_bkgnoter0_indirect0_onlyindirect0_close0_ban0_baseline0_survey1_bkgInspPasgSwap0_hypSuggestor1"
+    ## MOOSE-future-past-indirect2 ckpts
+    ckpt_tomato_base_ff1_ff2_past_onlyindirect2_0_5_claude = "claude_5bkg_4itr_bkgnoter0_indirect1_onlyindirect2_close0_ban0_baseline0_survey1_bkgInspPasgSwap0_hypSuggestor1"
+    ## MOOSE-future-past-indirect0 ckpts
+    ckpt_tomato_base_ff1_ff2_past_onlyindirect0_0_5_claude = "claude_5bkg_4itr_bkgnoter0_indirect1_onlyindirect0_close0_ban0_baseline0_survey1_bkgInspPasgSwap0_hypSuggestor1"
+    ckpt_tomato_base_ff1_ff2_past_onlyindirect0_5_50_claude = "claude_45bkg_4itr_bkgnoter5_indirect1_onlyindirect0_close0_ban0_baseline0_survey1_bkgInspPasgSwap0_hypSuggestor1"
+    ## MOOSE_baseline2_claude
+    ckpt_baseline2_0_50_claude = "claude_50bkg_0itr_bkgnoter0_indirect0_onlyindirect0_close0_ban1_baseline2_survey1_bkgInspPasgSwap0_hypSuggestor0"
+
 
     if method_name == "MOOSE_base":
         start_end_id = [[0,5], [5,25], [25,50]]
@@ -168,6 +183,26 @@ def find_hyperparameter_for_display_results(model_name, method_name):
         start_end_id = [[0, 50]]
         num_CoLM_feedback_times = 4
         ckpt_addr_full = [ckpt_tomato_pf_0_50_bkg_insp_pasg_swap]
+    elif method_name == "MOOSE_base_claude":
+        start_end_id = [[0, 5], [5, 50]]
+        num_CoLM_feedback_times = 4
+        ckpt_addr_full = [ckpt_tomato_base_0_5_claude, ckpt_tomato_base_5_50_claude]
+    elif method_name == "MOOSE_based_with_ff1_and_ff2_claude":
+        start_end_id = [[0, 5]]
+        num_CoLM_feedback_times = 4
+        ckpt_addr_full = [ckpt_tomato_base_ff1_ff2_0_5_claude]
+    elif method_name == "MOOSE_claude_onlyindirect2":
+        start_end_id = [[0, 5]]
+        num_CoLM_feedback_times = 4
+        ckpt_addr_full = [ckpt_tomato_base_ff1_ff2_past_onlyindirect2_0_5_claude]
+    elif method_name == "MOOSE_claude_onlyindirect0":
+        start_end_id = [[0, 5], [5, 50]]
+        num_CoLM_feedback_times = 4
+        ckpt_addr_full = [ckpt_tomato_base_ff1_ff2_past_onlyindirect0_0_5_claude, ckpt_tomato_base_ff1_ff2_past_onlyindirect0_5_50_claude]
+    elif method_name == "MOOSE_baseline2_claude":
+        start_end_id = [[0, 50]]
+        num_CoLM_feedback_times = 0
+        ckpt_addr_full = [ckpt_baseline2_0_50_claude]
     else:
         raise NotImplementedError
 
@@ -179,9 +214,10 @@ def main():
     # 'chatgpt' or 'gpt4'
     model_name = 'gpt4'
     # "MOOSE_base", "rand_background_baseline", "rand_background_rand_inspiration_baseline", "rand_background_BM25_inspiration_baseline", "gpt35_background_gpt35_inspiration", "MOOSE_wo_ff1", "MOOSE_wo_ff2", "MOOSE_wo_survey", "MOOSE_w_random_corpus"
-    method_name1 = "MOOSE_base"
+    # "MOOSE_baseline2_claude", "MOOSE_base_claude", "MOOSE_claude_onlyindirect0"
+    method_name1 = "MOOSE_base_claude"
     # "MOOSE"
-    method_name2 = "MOOSE"
+    method_name2 = "MOOSE_claude_onlyindirect0"
     ## load data and find score
     start_end_id_1, num_CoLM_feedback_times_1, ckpt_addr1_full = find_hyperparameter_for_display_results(model_name, method_name1)
     start_end_id_2, num_CoLM_feedback_times_2, ckpt_addr2_full = find_hyperparameter_for_display_results(model_name, method_name2)
@@ -204,7 +240,7 @@ def main():
     print("ave_score2_w_ind: ", ave_score2_w_ind)
 
     # score_all_itrs
-    if method_name1 == "MOOSE_base" and method_name2 == "MOOSE":
+    if (method_name1 == "MOOSE_base" and method_name2 == "MOOSE") or (method_name1 == "MOOSE_base_claude" and method_name2 == "MOOSE_claude_onlyindirect0"):
         score_all_itrs = np.concatenate((score1_wo_ind_itrs, score2_wo_ind_itrs, score2_w_ind_itrs), axis=1)
         print("\nscore_all_itrs: ", score_all_itrs.shape)
         ave_score_all_itrs = np.nanmean(score_all_itrs, axis=1)

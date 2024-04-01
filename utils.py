@@ -271,7 +271,7 @@ def unify_feedbacks_to_format(list_of_CoLM_feedbacks):
 # Special treatment for 'hypothesis_generator_refine' and 'indiscriminate_confirmation_handler' and 'hypothesis_suggstor'
 def pick_from_generation(model_name, cur_generation, post_prompt, if_with_eval=False, keyword_key_generation=None, keyword_key_generation_eval=None, module_name=None):
     ## split output
-    if model_name != 'chatgpt':
+    if model_name != 'chatgpt' and model_name != 'claude':
         cur_generation = cur_generation.split(post_prompt)
         if len(cur_generation) != 2:
             print("Warning: len(cur_generation.split(post_prompt)) > 2")
@@ -549,12 +549,12 @@ def prompts_for_tomato_modules(model_name, module_name, if_with_eval=False, prom
         post_prompt = "\nPlease give a response to the initial question of providing feedbacks on whether the research hypothesis reflects the reality" + post_prompt_format
     elif module_name == 'novelty_detector':
         post_prompt_format = ", and also give some suggestions on how the hypothesis can be more novel (response format: 'Feedback: \nSuggestion: \n')."
-        post_prompt = "\nPlease give a responses to the initial question of providing detailed feedbacks on whether the research hypothesis is by any chance not novel (not a semantically direct copy of any inspiration or any argument in existing business literature)" + post_prompt_format
+        post_prompt = "\nPlease give a responses to the initial question of providing detailed feedbacks on whether the research hypothesis is by any chance not novel (neither a semantically direct copy of any inspiration nor any argument in existing business literature, which includes all possible literatures that are not listed here.)" + post_prompt_format
         # prompt_mode == 1 means args.if_novelty_module_have_access_to_surveys == 1
         if prompt_mode == 1:
             # We use this if_with_eval==True post_prompt_format for whichever if_with_eval to split cur_gene and cur_gene_feedback. When if_with_eval == False, tomato.py code should take charge of not using cur_gene_feedback
             pre_prompt = "Given a research hypothesis in business research, some inspirations used for developing the hypothesis, and a possibly related paragraph from a relevant business research survey, try to give some feedbacks on whether the hypothesis is by any chance not novel (the reason is that the hypothesis is used for business research, where novel and not ever proposed hypotheses are preferred). To be novel, the hypothesis should at least not be semantically a direct copy of any inspiration or any arguments in existing business literature (including literatures that are not provided as input), but could be a conclusion from multiple reasoning steps using the inspirations, and probably then with (slightly / some) deviations from the conclusion. \nThe hypothesis is: \n"
-            mid_prompt = ["\nThe inspirations used for developing the hypothesis are: \n", "\nOne of the most similar existing business literature paragraph is: \n"]
+            mid_prompt = ["\nThe inspirations used for developing the hypothesis are: \n", "\nOne possiblely related existing business literature paragraph is: \n"]
         elif prompt_mode == 0:
             pre_prompt = "Given a research hypothesis in business research and some inspirations used for developing the hypothesis, try to give some feedbacks on whether the hypothesis is by any chance not novel (the reason is that the hypothesis is used for business research, where novel and not ever proposed hypotheses are preferred). To be novel, the hypothesis should at least not be semantically a direct copy of any inspiration or any arguments in existing business literature, but could be a conclusion from multiple reasoning steps using the inspirations, and probably then with (slightly / some) deviations from the conclusion. \nThe hypothesis is: \n"
             mid_prompt = ["\nThe inspirations used for developing the hypothesis are: \n"]

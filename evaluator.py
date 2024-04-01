@@ -1,6 +1,7 @@
 import os, time, re
 import torch
 import openai
+from openai import AzureOpenAI
 import transformers
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
 import numpy as np
@@ -17,10 +18,15 @@ class Evaluator(object):
         if args.if_azure_api == 0:
             openai.api_key = self.args.api_key
         else:
-            openai.api_type = ""
-            openai.api_base = ""
-            openai.api_version = ""
-            openai.api_key = self.args.api_key
+            # openai.api_type = ""
+            # openai.api_base = ""
+            # openai.api_version = "2024-02-15-preview"
+            # openai.api_key = self.args.api_key
+            self.client = AzureOpenAI(
+                azure_endpoint = "https://declaregpt4.openai.azure.com/", 
+                api_key=self.args.api_key,  
+                api_version="2024-02-15-preview"
+            )
         assert openai.api_key != ""
         # self.hypotheses is a sub-element of self.result
         self.result = None
@@ -95,6 +101,19 @@ class Evaluator(object):
         score_reasons = {}
         cnt_finished = 0
         if self.args.if_groundtruth_hypotheses == 0:
+            # num_chunks_with_and_without_past_feedback_per_bkg
+            if self.args.if_indirect_feedback == 0:
+                num_chunks_with_and_without_past_feedback_per_bkg = 1
+            elif self.args.if_indirect_feedback == 1:
+                if self.args.if_only_indirect_feedback == 0 or self.args.if_only_indirect_feedback == 1:
+                    num_chunks_with_and_without_past_feedback_per_bkg = 2
+                elif self.args.if_only_indirect_feedback == 2:
+                    num_chunks_with_and_without_past_feedback_per_bkg = 1
+                else:
+                    raise NotImplementedError
+            else:
+                raise NotImplementedError
+            # start looping
             for cur_id_bkg, cur_bkg_ori in enumerate(self.background):
                 if cur_bkg_ori not in scores:
                     cur_bkg = cur_bkg_ori
@@ -103,16 +122,17 @@ class Evaluator(object):
                     score_reasons[cur_bkg] = []
                     cur_bkg = cur_bkg_ori
                     cur_hyp_for_cur_bkg = self.hypotheses[cur_bkg_ori]
-                    # in case a bkg has more than one data item in our dataset
-                    if len(cur_hyp_for_cur_bkg) > 1:
-                        cur_hyp_for_cur_bkg = cur_hyp_for_cur_bkg[:1]
+                    # in case a bkg has more than one data item (annotated publication) in our dataset
+                    if len(cur_hyp_for_cur_bkg) > 1*num_chunks_with_and_without_past_feedback_per_bkg:
+                        cur_hyp_for_cur_bkg = cur_hyp_for_cur_bkg[:1*num_chunks_with_and_without_past_feedback_per_bkg]
                 else:
                     # raise Exception("repeated key in scores: {}; cur_bkg: {}".format(scores, cur_bkg))
+                    assert len(self.hypotheses[cur_bkg_ori]) == 2*num_chunks_with_and_without_past_feedback_per_bkg
                     cur_bkg = cur_bkg_ori + " "
                     assert cur_bkg not in score_reasons
                     scores[cur_bkg] = []
                     score_reasons[cur_bkg] = []
-                    cur_hyp_for_cur_bkg = self.hypotheses[cur_bkg_ori][1:2]
+                    cur_hyp_for_cur_bkg = self.hypotheses[cur_bkg_ori][1*num_chunks_with_and_without_past_feedback_per_bkg:2*num_chunks_with_and_without_past_feedback_per_bkg]
                 if cur_id_bkg == 0:
                     print("len(cur_hyp_for_cur_bkg): ", len(cur_hyp_for_cur_bkg))
                 for cur_id_hyp_direct_or_indirect , cur_hyp_direct_or_indirect in enumerate(cur_hyp_for_cur_bkg):
@@ -225,13 +245,21 @@ class Evaluator(object):
                     reply = response["choices"][0]['message']['content']
                     if_api_completed = True
                 else:
-                    response = openai.ChatCompletion.create(
-                    engine=api_model_name,
+                    # response = openai.ChatCompletion.create(
+                    # engine=api_model_name,
+                    # messages=[{"role": "user", "content": input_txt}],
+                    # top_p=0.90,
+                    # temperature=temperature,
+                    # max_tokens=max_tokens)
+                    # reply = response["choices"][0]['message']['content']
+                    # if_api_completed = True
+                    response = self.client.chat.completions.create(
+                    model=api_model_name, 
                     messages=[{"role": "user", "content": input_txt}],
                     top_p=0.90,
                     temperature=temperature,
                     max_tokens=max_tokens)
-                    reply = response["choices"][0]['message']['content']
+                    reply = response.choices[0].message.content
                     if_api_completed = True
             except:
                 print("OpenAI reach its rate limit")

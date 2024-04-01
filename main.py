@@ -8,7 +8,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]="1"
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_name", type=str, default="vicuna",
-                        help="model name: gpt2/llama/vicuna/vicuna13/chatgpt/falcon")
+                        help="model name: gpt2/llama/vicuna/vicuna13/chatgpt/falcon/claude")
     parser.add_argument("--root_data_dir", type=str, default="./Data/")
     parser.add_argument("--survey_data_dir", type=str, default="./Data/Surveys/")
     parser.add_argument("--output_dir", type=str, default="~/Checkpoints/Tomato/try")
@@ -28,7 +28,7 @@ def main():
     args = parser.parse_args()
 
     # check hyper-parameters
-    assert args.model_name == 'llama' or args.model_name == 'vicuna' or args.model_name == 'vicuna13' or args.model_name == 'gpt2' or args.model_name == 'chatgpt' or args.model_name == 'falcon'
+    assert args.model_name == 'llama' or args.model_name == 'vicuna' or args.model_name == 'vicuna13' or args.model_name == 'gpt2' or args.model_name == 'chatgpt' or args.model_name == 'falcon' or args.model_name == "claude"
     assert args.if_indirect_feedback == 1 or args.if_indirect_feedback == 0
     assert args.if_only_indirect_feedback == 0 or args.if_only_indirect_feedback == 1 or args.if_only_indirect_feedback == 2
     assert args.if_close_domain == 1 or args.if_close_domain == 0
@@ -59,7 +59,7 @@ def main():
     # check gpu
     n_gpu = torch.cuda.device_count()
     print("n_gpu: ", n_gpu)
-    if not args.model_name == 'chatgpt':
+    if not (args.model_name == 'chatgpt' or args.model_name == "claude"):
         print_nvidia_smi()
         assert n_gpu >= 1
 
