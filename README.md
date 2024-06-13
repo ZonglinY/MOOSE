@@ -5,7 +5,7 @@
 </p>
 
 
-This repository is the official implementation of the paper [\<Large Language Models for Automated Open-domain Scientific Hypotheses Discovery\>](https://arxiv.org/abs/2309.02726v2), which is accepted by ACL 2024 findings. 
+This repository is the official implementation of the paper [\<Large Language Models for Automated Open-domain Scientific Hypotheses Discovery\>](https://arxiv.org/abs/2309.02726), which is accepted by ACL 2024 findings. 
 
 
 In general, with this repository, you can     
